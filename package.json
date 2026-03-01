@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "googleapis": "^171.4.0",
+    "mssql": "^12.2.0",
+    "n8n-nodes-playwright": "^0.2.21",
+    "puppeteer": "^24.36.1"
+  }
+}

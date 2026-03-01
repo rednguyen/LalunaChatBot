@@ -1,0 +1,6 @@
+2026/02/05-00:51:20.240 5068 Reusing MANIFEST C:\Users\dacth\OneDrive\Documents\LalunaChatBot\zalo-profile\Default\IndexedDB\https_chat.zalo.me_0.indexeddb.leveldb/MANIFEST-000001
+2026/02/05-00:51:20.241 5068 Recovering log #3
+2026/02/05-00:51:20.290 5068 Reusing old log C:\Users\dacth\OneDrive\Documents\LalunaChatBot\zalo-profile\Default\IndexedDB\https_chat.zalo.me_0.indexeddb.leveldb/000003.log 
+2026/02/05-00:51:54.214 5068 Level-0 table #5: started
+2026/02/05-00:51:54.403 5068 Level-0 table #5: 1362198 bytes OK
+2026/02/05-00:51:54.449 5068 Delete type=0 #3
