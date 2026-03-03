@@ -1,0 +1,5 @@
+hotel = {
+    "name":"Laluna Hoi An Riverside Hotel & Spa",
+    "booking": "https://www.booking.com/hotel/vn/laluna-hoi-an-riverside-hotel.html?aid=304142&label=gen173nr-10CAso9AFCG2xhbHVuYS1ob2ktYW4tcml2ZXJzaWRlLXNwYUgJWARosAKIAQGYATO4ARfIAQzYAQPoAQH4AQGIAgGoAgG4AtuJms0GwAIB0gIkOTJjYTQzM2QtMTk0Ny00NDg4LWE1YWMtMTBlMjU5MjU5ZDVk2AIB4AIB&sid=01115f190b6ffa6d2e2a06b8bf25d363&all_sr_blocks=321017504_421514912_2_41_0_754700&checkin=2026-03-05&checkout=2026-03-06&dest_id=3210175&dest_type=hotel&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=321017504_421514912_2_41_0_754700&hpos=1&matching_block_id=321017504_421514912_2_41_0_754700&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=321017504_421514912_2_41_0_754700_261291759&srepoch=1772520700&srpvid=947b303bd32c034c&type=total&ucfs=1&",
+    "zalogroup": "OTA Hội An Room Testing"
+    }
