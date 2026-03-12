@@ -68,7 +68,7 @@ async function downloadExcel() {
   return destPath;
 }
 
-async function procesSuperDeluxeSaleRoomDate(data) {
+async function processSuperDeluxeSaleRoomDate(data) {
   const processedData = data[0];
   let returnMessage = [];
   processedData.forEach(element => {
@@ -77,7 +77,7 @@ async function procesSuperDeluxeSaleRoomDate(data) {
   return returnMessage;
 }
 
-async function procesSuperDeluxePeakRoomDate(data) {
+async function processSuperDeluxePeakRoomDate(data) {
   const processedData = data[0];
   let returnMessage = [];
   processedData.forEach(element => {
@@ -86,7 +86,7 @@ async function procesSuperDeluxePeakRoomDate(data) {
   return returnMessage;
 }
 
-async function procesOccPeakRoomDate(data) {
+async function processOccPeakRoomDate(data) {
   const processedData = data[0];
   let returnMessage = [];
   processedData.forEach(element => {
@@ -95,9 +95,21 @@ async function procesOccPeakRoomDate(data) {
   return returnMessage;
 }
 
+async function processOccLowRoomDate(data) {
+  const processedData = data[0];
+  let returnMessage = [];
+
+  processedData.forEach(element => {
+    returnMessage.unshift(`-Ngày: ${element.Date} || ${element.Occ}%\n`);
+  });
+
+  return returnMessage;
+}
+
 module.exports = {
-  procesOccPeakRoomDate: procesOccPeakRoomDate,
-  procesSuperDeluxePeakRoomDate: procesSuperDeluxePeakRoomDate,
-  procesSuperDeluxeSaleRoomDate: procesSuperDeluxeSaleRoomDate,
+  processOccPeakRoomDate: processOccPeakRoomDate,
+  processOccLowRoomDate: processOccLowRoomDate,
+  processSuperDeluxePeakRoomDate: processSuperDeluxePeakRoomDate,
+  processSuperDeluxeSaleRoomDate: processSuperDeluxeSaleRoomDate,
   downloadExcel: downloadExcel
 }

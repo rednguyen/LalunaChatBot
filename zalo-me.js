@@ -150,12 +150,14 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
 (async () => {
   const destPath = await ms.downloadExcel();
   const occPeakRoomDate = await fn.getOccPeakRoomDate();
+  const occLowRoomDate = await fn.getOccLowRoomDate();
   const superDeluxePeakRoomDate = await fn.getSuperDeluxePeakRoomDate();
   const superDeluxeSaleRoomDate = await fn.getSuperDeluxeSaleRoomDate();
 
-  let getOccPeakRoomDateMessage = await ms.procesOccPeakRoomDate(occPeakRoomDate);
-  let getSuperDeluxePeakRoomDateMessage = await ms.procesSuperDeluxePeakRoomDate(superDeluxePeakRoomDate);
-  let getSuperDeluxeSaleRoomDateMessage = await ms.procesSuperDeluxeSaleRoomDate(superDeluxeSaleRoomDate);
+  let getOccPeakRoomDateMessage = await ms.processOccPeakRoomDate(occPeakRoomDate);
+  let getOccLowRoomDateMessage = await ms.processOccLowRoomDate(occLowRoomDate);
+  let getSuperDeluxePeakRoomDateMessage = await ms.processSuperDeluxePeakRoomDate(superDeluxePeakRoomDate);
+  let getSuperDeluxeSaleRoomDateMessage = await ms.processSuperDeluxeSaleRoomDate(superDeluxeSaleRoomDate);
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -186,6 +188,12 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
       group: 'OTA Laluna Hội An - Chiic',
       headline: '📢 Thống kê số phòng Super Deluxe đã bán giai đoạn tháng 4:\n\n',
       message: getSuperDeluxeSaleRoomDateMessage
+    },
+    {
+      id: '4',
+      group: 'OTA Laluna Hội An - Chiic',
+      headline: '📢 Công suất phòng giai đoạn tháng 5:\n\n',
+      message: getOccLowRoomDateMessage
     }
   ];
 

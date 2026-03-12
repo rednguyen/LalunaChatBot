@@ -139,9 +139,16 @@ async function getSuperDeluxePeakRoomDate(){
                 UNION ALL
 
                 -- Range 2
-                SELECT DATEADD(day, n, '2026-03-01')
+                SELECT DATEADD(day, n, '2026-04-01')
                 FROM Numbers
-                WHERE DATEADD(day, n, '2026-03-01') <= '2026-04-30'
+                WHERE DATEADD(day, n, '2026-04-01') <= '2026-04-30'
+
+                UNION ALL
+
+                -- Range 3
+                SELECT DATEADD(day, n, '2026-11-01')
+                FROM Numbers
+                WHERE DATEADD(day, n, '2026-11-01') <= '2026-11-30'
             )
             SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate)) AS 'Date',
                 occ.roomtypecode,
@@ -216,6 +223,52 @@ async function getOccPeakRoomDate(){
     }
 }
 
+async function getOccLowRoomDate(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 100
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-05-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-05-01') <= '2026-05-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 async function getSuperDeluxeSaleRoomDate(){
     try{
         let pool = await sql.connect(config);
@@ -263,5 +316,6 @@ module.exports ={
     getMinMaxRoomPrice: getMinMaxRoomPrice,
     getSuperDeluxePeakRoomDate: getSuperDeluxePeakRoomDate,
     getOccPeakRoomDate: getOccPeakRoomDate,
+    getOccLowRoomDate: getOccLowRoomDate,
     getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate
 }
