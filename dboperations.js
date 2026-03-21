@@ -1,6 +1,7 @@
 var config = require('./dbconfig');
 const sql = require('mssql');
 
+
 async function getArrivalGuests(){
     try{
         let pool = await sql.connect(config);
@@ -177,6 +178,58 @@ async function getSuperDeluxePeakRoomDate(){
     }
 }
 
+async function getSuperDeluxeLowRoomDate(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                SELECT 0 AS n
+                UNION ALL
+                SELECT n + 1
+                FROM Numbers
+                WHERE n < 100
+            ),
+            cte AS (
+                -- Range 1
+                SELECT DATEADD(day, n, '2026-05-01') AS mydate
+                FROM Numbers
+                WHERE DATEADD(day, n, '2026-05-01') <= '2026-06-30'
+
+                UNION ALL
+
+                -- Range 2
+                SELECT DATEADD(day, n, '2026-09-01')
+                FROM Numbers
+                WHERE DATEADD(day, n, '2026-09-01') <= '2026-10-31'
+
+            )
+            SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate)) AS 'Date',
+                occ.roomtypecode,
+                Count(*)                     AS 'Count',
+                max(f.rateamount)            AS 'Max Price'
+            FROM   cte
+                JOIN (SELECT *
+                        FROM   activefolio af) AS occ
+                    ON occ.arrivaldate <= mydate
+                        AND occ.departuredate > mydate
+                JOIN folio f
+                    ON f.folionum = occ.folionum
+            where occ.RoomTypeCode = 'SDXDB' 
+            GROUP  BY mydate,
+                    occ.roomtypecode
+            HAVING count(*) > 5
+            and max(f.rateamount) < 2200000
+            ORDER  BY mydate,
+                    occ.roomtypecode
+            OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 async function getOccPeakRoomDate(){
     try{
         let pool = await sql.connect(config);
@@ -232,7 +285,53 @@ async function getOccLowRoomDate(){
                     UNION ALL
                     SELECT n + 1
                     FROM Numbers
-                    WHERE n < 100
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-05-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-05-01') <= '2026-12-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateMay(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
                 ),
                 cte AS (
                     -- Range 1
@@ -246,6 +345,328 @@ async function getOccLowRoomDate(){
                     SELECT DATEADD(day, n, '2026-05-01') as mydate
                     FROM Numbers
                     WHERE DATEADD(day, n, '2026-05-01') <= '2026-05-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateJune(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-06-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-06-01') <= '2026-06-30'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateJuly(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-07-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-07-01') <= '2026-07-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateAugust(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-08-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-08-01') <= '2026-08-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateSeptember(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-09-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-09-01') <= '2026-09-30'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateOctober(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-10-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-10-01') <= '2026-10-31'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateNovember(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-11-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-11-01') <= '2026-11-30'
+                )
+                SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
+                            Datepart(yyyy, mydate)) AS 'Date',
+                    ROUND(COUNT(*) * 100.0 / 48, 2)                     AS 'Occ'
+                FROM   cte
+                    JOIN (SELECT *
+                            FROM   activefolio af) AS occ
+                        ON occ.arrivaldate <= mydate
+                            AND occ.departuredate > mydate
+                    JOIN folio f
+                        ON f.folionum = occ.folionum
+                GROUP  BY mydate
+                --HAVING count(*) > 24
+                ORDER  BY mydate
+                OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+async function getOccRoomDateDecember(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                    SELECT 0 AS n
+                    UNION ALL
+                    SELECT n + 1
+                    FROM Numbers
+                    WHERE n < 300
+                ),
+                cte AS (
+                    -- Range 1
+                    --SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                    --FROM Numbers
+                    --WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+
+                    --UNION ALL
+
+                    -- Range 2
+                    SELECT DATEADD(day, n, '2026-12-01') as mydate
+                    FROM Numbers
+                    WHERE DATEADD(day, n, '2026-12-01') <= '2026-12-31'
                 )
                 SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate), '-',
                             Datepart(yyyy, mydate)) AS 'Date',
@@ -308,6 +729,39 @@ async function getSuperDeluxeSaleRoomDate(){
     }
 }
 
+async function fetchBookingReviews(bookingUrl, date){
+    const url = "https://api.apify.com/v2/acts/voyager~booking-reviews-scraper/run-sync-get-dataset-items";
+    const token = "pasteTokenHere";
+    try {
+    const response = await fetch(`${url}?token=${token}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cutoffDate: date,
+        maxReviewsPerHotel: 1000,
+        reviewScores: ["ALL"],
+        sortReviewsBy: "f_recent_desc",
+        startUrls: [
+          {
+            url: bookingUrl,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Error:", err.message);
+  }
+}
+
 module.exports ={
     getArrivalGuests : getArrivalGuests,
     getDepartureGuests: getDepartureGuests,
@@ -315,7 +769,17 @@ module.exports ={
     getDepartureGuestsFromAgoda: getDepartureGuestsFromAgoda,
     getMinMaxRoomPrice: getMinMaxRoomPrice,
     getSuperDeluxePeakRoomDate: getSuperDeluxePeakRoomDate,
+    getSuperDeluxeLowRoomDate: getSuperDeluxeLowRoomDate,
     getOccPeakRoomDate: getOccPeakRoomDate,
     getOccLowRoomDate: getOccLowRoomDate,
-    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate
+    getOccRoomDateMay: getOccRoomDateMay,
+    getOccRoomDateJune: getOccRoomDateJune,
+    getOccRoomDateJuly: getOccRoomDateJuly,
+    getOccRoomDateAugust: getOccRoomDateAugust,
+    getOccRoomDateSeptember: getOccRoomDateSeptember,
+    getOccRoomDateOctober: getOccRoomDateOctober,
+    getOccRoomDateNovember: getOccRoomDateNovember,
+    getOccRoomDateDecember: getOccRoomDateDecember,
+    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate,
+    fetchBookingReviews: fetchBookingReviews
 }

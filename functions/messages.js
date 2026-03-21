@@ -86,6 +86,17 @@ async function processSuperDeluxePeakRoomDate(data) {
   return returnMessage;
 }
 
+
+async function processSuperDeluxeLowRoomDate(data) {
+  const processedData = data[0];
+  let returnMessage = [];
+  processedData.forEach(element => {
+    returnMessage.unshift(`-Ngày: ${element.Date} | Đã Bán: ${element.Count} | Max Price: ${element['Max Price']} VND\n`);
+  });
+  return returnMessage;
+
+}
+
 async function processOccPeakRoomDate(data) {
   const processedData = data[0];
   let returnMessage = [];
@@ -106,10 +117,36 @@ async function processOccLowRoomDate(data) {
   return returnMessage;
 }
 
+async function processBookingReviews(data) {
+  let returnMessage = [];
+  for (const review of data) {
+      if (review.rating < 9){
+        if (review.reviewTitle){
+        returnMessage.unshift(`⭐ ${review.rating}/10 - ${review.reviewTitle}\n`);
+      }
+      else{
+        returnMessage.unshift(`⭐ ${review.rating}/10\n`);  
+      }
+      returnMessage.unshift(`Guest: ${review.userName} - ${review.userLocation}\n`);
+      returnMessage.unshift(`Room: ${review.roomInfo}\n`);
+      if (review.dislikedText) {
+        returnMessage.unshift(`Review: ${review.dislikedText}\n`);
+      }
+      returnMessage.unshift(` \n`);
+    }
+  }
+    
+  console.log(returnMessage);
+  return returnMessage;
+}
+
+
 module.exports = {
   processOccPeakRoomDate: processOccPeakRoomDate,
   processOccLowRoomDate: processOccLowRoomDate,
   processSuperDeluxePeakRoomDate: processSuperDeluxePeakRoomDate,
+  processSuperDeluxeLowRoomDate: processSuperDeluxeLowRoomDate,
   processSuperDeluxeSaleRoomDate: processSuperDeluxeSaleRoomDate,
+  processBookingReviews: processBookingReviews,
   downloadExcel: downloadExcel
 }

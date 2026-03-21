@@ -5,7 +5,7 @@ const ms = require('./functions/messages');
 const { google } = require('googleapis');
 const path = require("path");
 const fs = require("fs");
-
+const hotels = require('./hotels.json');
 
 
 
@@ -152,12 +152,55 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
   const occPeakRoomDate = await fn.getOccPeakRoomDate();
   const occLowRoomDate = await fn.getOccLowRoomDate();
   const superDeluxePeakRoomDate = await fn.getSuperDeluxePeakRoomDate();
+  const superDeluxeLowRoomDate = await fn.getSuperDeluxeLowRoomDate();
   const superDeluxeSaleRoomDate = await fn.getSuperDeluxeSaleRoomDate();
 
+  const occRoomDateMay = await fn.getOccRoomDateMay();
+  const occRoomDateJune = await fn.getOccRoomDateJune();
+  const occRoomDateJuly = await fn.getOccRoomDateJuly();  
+  const occRoomDateAugust = await fn.getOccRoomDateAugust();
+  const occRoomDateSeptember = await fn.getOccRoomDateSeptember();
+  const occRoomDateOctober = await fn.getOccRoomDateOctober();
+  const occRoomDateNovember = await fn.getOccRoomDateNovember();
+  const occRoomDateDecember = await fn.getOccRoomDateDecember();
+  
+
+
+  let getSuperDeluxePeakRoomDateMessage = await ms.processSuperDeluxePeakRoomDate(superDeluxePeakRoomDate);
+  let getSuperDeluxeLowRoomDateMessage = await ms.processSuperDeluxeLowRoomDate(superDeluxeLowRoomDate);
+  let getSuperDeluxeSaleRoomDateMessage = await ms.processSuperDeluxeSaleRoomDate(superDeluxeSaleRoomDate);
+
+  
   let getOccPeakRoomDateMessage = await ms.processOccPeakRoomDate(occPeakRoomDate);
   let getOccLowRoomDateMessage = await ms.processOccLowRoomDate(occLowRoomDate);
-  let getSuperDeluxePeakRoomDateMessage = await ms.processSuperDeluxePeakRoomDate(superDeluxePeakRoomDate);
-  let getSuperDeluxeSaleRoomDateMessage = await ms.processSuperDeluxeSaleRoomDate(superDeluxeSaleRoomDate);
+  let getOccRoomDateMayMessage = await ms.processOccLowRoomDate(occRoomDateMay);
+  let getOccRoomDateJuneMessage = await ms.processOccLowRoomDate(occRoomDateJune);
+  let getOccRoomDateJulyMessage = await ms.processOccLowRoomDate(occRoomDateJuly);
+  let getOccRoomDateAugustMessage = await ms.processOccLowRoomDate(occRoomDateAugust);  
+  let getOccRoomDateSeptemberMessage = await ms.processOccLowRoomDate(occRoomDateSeptember);
+  let getOccRoomDateOctoberMessage = await ms.processOccLowRoomDate(occRoomDateOctober);
+  let getOccRoomDateNovemberMessage = await ms.processOccLowRoomDate(occRoomDateNovember);
+  let getOccRoomDateDecemberMessage = await ms.processOccLowRoomDate(occRoomDateDecember);
+
+  // let hotelReviewMessages = [];
+  // const todayDate = new Date();
+  // const yesterdayDate = new Date();
+  // yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  // const yesteday = yesterdayDate.toLocaleDateString('en-CA');
+  // const [year, month, day] = todayDate.toLocaleDateString('en-CA').split('-');
+  // const todayVNformat = `${day}-${month}`;
+
+  // for (const hotel of hotels) {
+  //   const bookingReviews = await fn.fetchBookingReviews(hotel.booking, yesteday);
+  //   const bookingReviewMessage = await ms.processBookingReviews(bookingReviews);
+  //   if (bookingReviewMessage.length > 0) {
+  //     const hotelReviewMessage = {
+  //     zalo: hotel.zalogroup,
+  //     reviewMessage : bookingReviewMessage
+  //   }
+  //   hotelReviewMessages.push(hotelReviewMessage);; // skip if no reviews
+  //   }
+  // }
 
   const browser = await puppeteer.launch({
     headless: false,
@@ -171,30 +214,78 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
   console.log('Zalo opened with saved session');
 
   const jobs = [
+    // {
+    //   id: '1',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Giá phòng Super Deluxe cân nhắc TĂNG giai đoạn cao điểm:\n\n',
+    //   message: getSuperDeluxePeakRoomDateMessage
+    // },
+    // {
+    //   id: '2',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Giá phòng Super Deluxe cân nhắc TĂNG giai đoạn thấp điểm:\n\n',
+    //   message: getSuperDeluxeLowRoomDateMessage
+    // },
+    // {
+    //   id: '3',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 4:\n\n',
+    //   message: getOccPeakRoomDateMessage
+    // },
+    // {
+    //   id: '4',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Thống kê số phòng Super Deluxe đã bán giai đoạn tháng 4:\n\n',
+    //   message: getSuperDeluxeSaleRoomDateMessage
+    // },
+    // {
+    //   id: '5',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 5:\n\n',
+    //   message: getOccRoomDateMayMessage
+    // },
     {
-      id: '1',
+      id: '6',
       group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Giá phòng Super Deluxe cân nhắc TĂNG giai đoạn cao điểm:\n\n',
-      message: getSuperDeluxePeakRoomDateMessage
+      headline: '📢 Công suất phòng giai đoạn tháng 6:\n\n',
+      message: getOccRoomDateJuneMessage
     },
-    {
-      id: '2',
-      group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Công suất phòng giai đoạn tháng 4:\n\n',
-      message: getOccPeakRoomDateMessage
-    },
-    {
-      id: '3',
-      group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Thống kê số phòng Super Deluxe đã bán giai đoạn tháng 4:\n\n',
-      message: getSuperDeluxeSaleRoomDateMessage
-    },
-    {
-      id: '4',
-      group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Công suất phòng giai đoạn tháng 5:\n\n',
-      message: getOccLowRoomDateMessage
-    }
+    // {
+    //   id: '7',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 7:\n\n',
+    //   message: getOccRoomDateJulyMessage
+    // },
+    // {
+    //   id: '8',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 8:\n\n',
+    //   message: getOccRoomDateAugustMessage
+    // },
+    // {
+    //   id: '9',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 9:\n\n',
+    //   message: getOccRoomDateSeptemberMessage
+    // },
+    // {
+    //   id: '10',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 10:\n\n',
+    //   message: getOccRoomDateOctoberMessage
+    // },
+    // {
+    //   id: '11',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 11:\n\n',
+    //   message: getOccRoomDateNovemberMessage
+    // },
+    // {
+    //   id: '12',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 12:\n\n',
+    //   message: getOccRoomDateDecemberMessage
+    // }
   ];
 
   const attachments = [
@@ -226,6 +317,15 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
       attachment.path
     );
   }
+
+  // for (const hotelReviewMessage of hotelReviewMessages) {
+  //   await sendMessageToGroup(
+  //     page,
+  //     hotelReviewMessage.zalo,
+  //     `📢 Booking Reviews ngày ${todayVNformat}:\n\n`,
+  //     hotelReviewMessage.reviewMessage
+  //   );
+  // }
 
   // optional: close browser
   // await browser.close();
