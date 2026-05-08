@@ -729,38 +729,6 @@ async function getSuperDeluxeSaleRoomDate(){
     }
 }
 
-async function fetchBookingReviews(bookingUrl, date){
-    const url = "https://api.apify.com/v2/acts/voyager~booking-reviews-scraper/run-sync-get-dataset-items";
-    const token = "";
-    try {
-    const response = await fetch(`${url}?token=${token}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cutoffDate: date,
-        maxReviewsPerHotel: 1000,
-        reviewScores: ["ALL"],
-        sortReviewsBy: "f_recent_desc",
-        startUrls: [
-          {
-            url: bookingUrl,
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error("Error:", err.message);
-  }
-}
 
 module.exports ={
     getArrivalGuests : getArrivalGuests,
