@@ -731,7 +731,7 @@ async function getSuperDeluxeSaleRoomDate(){
 
 async function fetchBookingReviews(bookingUrl, date){
     const url = "https://api.apify.com/v2/acts/voyager~booking-reviews-scraper/run-sync-get-dataset-items";
-    const token = "pasteTokenHere";
+    const token = "";
     try {
     const response = await fetch(`${url}?token=${token}`, {
       method: "POST",
