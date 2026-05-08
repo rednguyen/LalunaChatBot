@@ -748,6 +748,5 @@ module.exports ={
     getOccRoomDateOctober: getOccRoomDateOctober,
     getOccRoomDateNovember: getOccRoomDateNovember,
     getOccRoomDateDecember: getOccRoomDateDecember,
-    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate,
-    fetchBookingReviews: fetchBookingReviews
+    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate
 }
