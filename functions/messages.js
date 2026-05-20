@@ -97,6 +97,15 @@ async function processSuperDeluxeLowRoomDate(data) {
 
 }
 
+async function processFamilySummerRoomDate(data) {
+  const processedData = data[0];
+  let returnMessage = [];
+  processedData.forEach(element => {
+    returnMessage.unshift(`-Ngày: ${element.Date} | Đã Bán: ${element.Count} | Max Price: ${element['Max Price']} VND\n`);
+  });
+  return returnMessage;
+}
+
 async function processOccPeakRoomDate(data) {
   const processedData = data[0];
   let returnMessage = [];
@@ -148,5 +157,6 @@ module.exports = {
   processSuperDeluxeLowRoomDate: processSuperDeluxeLowRoomDate,
   processSuperDeluxeSaleRoomDate: processSuperDeluxeSaleRoomDate,
   processBookingReviews: processBookingReviews,
+  processFamilySummerRoomDate: processFamilySummerRoomDate,
   downloadExcel: downloadExcel
 }

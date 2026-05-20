@@ -149,7 +149,7 @@ async function getSuperDeluxePeakRoomDate(){
                 -- Range 3
                 SELECT DATEADD(day, n, '2026-11-01')
                 FROM Numbers
-                WHERE DATEADD(day, n, '2026-11-01') <= '2026-11-30'
+                WHERE DATEADD(day, n, '2026-11-01') <= '2026-12-31'
             )
             SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate)) AS 'Date',
                 occ.roomtypecode,
@@ -229,6 +229,51 @@ async function getSuperDeluxeLowRoomDate(){
         console.log(error);
     }
 }
+
+async function getFamilySummerRoomDate(){
+    try{
+        let pool = await sql.connect(config);
+        let results = await pool.request().query(
+                `WITH Numbers AS (
+                SELECT 0 AS n
+                UNION ALL
+                SELECT n + 1
+                FROM Numbers
+                WHERE n < 100
+            ),
+            cte AS (
+                -- Range 1
+                SELECT DATEADD(day, n, '2026-07-01') AS mydate
+                FROM Numbers
+                WHERE DATEADD(day, n, '2026-07-01') <= '2026-08-31'
+            )
+            SELECT Concat(Datepart(dd, mydate), '-', Datepart(mm, mydate)) AS 'Date',
+                occ.roomtypecode,
+                Count(*)                     AS 'Count',
+                max(f.rateamount)            AS 'Max Price'
+            FROM   cte
+                JOIN (SELECT *
+                        FROM   activefolio af) AS occ
+                    ON occ.arrivaldate <= mydate
+                        AND occ.departuredate > mydate
+                JOIN folio f
+                    ON f.folionum = occ.folionum
+			where occ.RoomTypeCode = 'FAMDC' OR occ.RoomTypeCode = 'FAMS' OR occ.RoomTypeCode = 'FAMDTW' OR occ.RoomTypeCode = 'FAMSTW' 
+            GROUP  BY mydate,
+                    occ.roomtypecode
+            HAVING count(*) > 0 and count(*) < 2
+            and max(f.rateamount) > 0 and max(f.rateamount) < 5300000
+            ORDER  BY mydate,
+                    occ.roomtypecode
+            OPTION (maxrecursion 0)`
+        );
+        return results.recordsets;
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 
 async function getOccPeakRoomDate(){
     try{
@@ -748,5 +793,6 @@ module.exports ={
     getOccRoomDateOctober: getOccRoomDateOctober,
     getOccRoomDateNovember: getOccRoomDateNovember,
     getOccRoomDateDecember: getOccRoomDateDecember,
-    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate
+    getSuperDeluxeSaleRoomDate: getSuperDeluxeSaleRoomDate,
+    getFamilySummerRoomDate: getFamilySummerRoomDate
 }

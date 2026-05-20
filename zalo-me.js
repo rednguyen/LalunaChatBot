@@ -154,6 +154,7 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
   const superDeluxePeakRoomDate = await fn.getSuperDeluxePeakRoomDate();
   const superDeluxeLowRoomDate = await fn.getSuperDeluxeLowRoomDate();
   const superDeluxeSaleRoomDate = await fn.getSuperDeluxeSaleRoomDate();
+  const familySummerRoomDate = await fn.getFamilySummerRoomDate(); 
 
   const occRoomDateMay = await fn.getOccRoomDateMay();
   const occRoomDateJune = await fn.getOccRoomDateJune();
@@ -169,6 +170,7 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
   let getSuperDeluxePeakRoomDateMessage = await ms.processSuperDeluxePeakRoomDate(superDeluxePeakRoomDate);
   let getSuperDeluxeLowRoomDateMessage = await ms.processSuperDeluxeLowRoomDate(superDeluxeLowRoomDate);
   let getSuperDeluxeSaleRoomDateMessage = await ms.processSuperDeluxeSaleRoomDate(superDeluxeSaleRoomDate);
+  let getFamilySummerRoomDateMessage = await ms.processFamilySummerRoomDate(familySummerRoomDate);
 
   
   let getOccPeakRoomDateMessage = await ms.processOccPeakRoomDate(occPeakRoomDate);
@@ -214,12 +216,12 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
   console.log('Zalo opened with saved session');
 
   const jobs = [
-    // {
-    //   id: '1',
-    //   group: 'OTA Laluna Hội An - Chiic',
-    //   headline: '📢 Giá phòng Super Deluxe cân nhắc TĂNG giai đoạn cao điểm:\n\n',
-    //   message: getSuperDeluxePeakRoomDateMessage
-    // },
+    {
+      id: '1',
+      group: 'OTA Laluna Hội An - Chiic',
+      headline: '📢 Giá phòng Super Deluxe cân nhắc TĂNG giai đoạn cao điểm:\n\n',
+      message: getSuperDeluxePeakRoomDateMessage
+    },
     // {
     //   id: '2',
     //   group: 'OTA Laluna Hội An - Chiic',
@@ -244,12 +246,12 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
     //   headline: '📢 Công suất phòng giai đoạn tháng 5:\n\n',
     //   message: getOccRoomDateMayMessage
     // },
-    {
-      id: '6',
-      group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Công suất phòng giai đoạn tháng 6:\n\n',
-      message: getOccRoomDateJuneMessage
-    },
+    // {
+    //   id: '6',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Công suất phòng giai đoạn tháng 6:\n\n',
+    //   message: getOccRoomDateJuneMessage
+    // },
     // {
     //   id: '7',
     //   group: 'OTA Laluna Hội An - Chiic',
@@ -286,15 +288,21 @@ async function sendAttachmentToGroup(page, groupName, headline, destPath) {
     //   headline: '📢 Công suất phòng giai đoạn tháng 12:\n\n',
     //   message: getOccRoomDateDecemberMessage
     // }
+    {
+      id: '13',
+      group: 'OTA Laluna Hội An - Chiic',
+      headline: '📢 Giá phòng Family cân nhắc TĂNG giai đoạn summer:\n\n',
+      message: getFamilySummerRoomDateMessage
+    }
   ];
 
   const attachments = [
-    {
-      id: '1',
-      group: 'OTA Laluna Hội An - Chiic',
-      headline: '📢 Availability 12 Tháng:\n\n',
-      path: destPath
-    }
+    // {
+    //   id: '1',
+    //   group: 'OTA Laluna Hội An - Chiic',
+    //   headline: '📢 Availability 12 Tháng:\n\n',
+    //   path: destPath
+    // }
   ];
 
   for (const job of jobs) {
